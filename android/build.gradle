@@ -1,0 +1,41 @@
+// Definición de los plugins y las versiones de Gradle y Kotlin
+buildscript {
+    ext.kotlin_version = '1.9.0'  // Actualiza a la última versión de Kotlin
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.0.2'  // Versión compatible de Gradle
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"  // Usa la variable kotlin_version definida arriba
+    }
+}
+
+// Repositorios compartidos por todos los subproyectos (módulos)
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+// Definición de los directorios de construcción
+rootProject.buildDir = "../build"
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(":app")
+}
+
+// Forzar la versión de Kotlin para todas las dependencias
+configurations.all {
+    resolutionStrategy {
+        force "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0"  // Forzar la versión de Kotlin en todas las dependencias
+    }
+}
+
+// Tarea para limpiar el directorio de construcción
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}
